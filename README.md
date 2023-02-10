@@ -24,18 +24,18 @@ Step 1: Checking if the orders file and customers is available in the S3 bucket
 
 Step 2: Once the file is available , we are fetching the file from the Amazon S3 bucket to our local system
 
-Step 4: Moving both customers and orders data to hdfs
+Step 3: Moving both customers and orders data to hdfs
 
-Step 4.1: Processing orders data using Spark so we just have closed orders (This is an additional step you can skip if you want)
+Step 3.1: Processing orders data using Spark so we just have closed orders (This is an additional step you can skip if you want)
 
-Step 5: creating customers and orders data in hive and loading it from hdfs
+Step 4: creating customers and orders data in hive and loading it from hdfs
 
-Step 6: Joining the customers and orders table using spark to get our final output
+Step 5: Joining the customers and orders table using spark to get our final output
 
-Step 7: Storing the final output to final_table and saving this output in local (you can store it in hdfs also if you want 🤗)
+Step 6: Storing the final output to final_table and saving this output in local (you can store it in hdfs also if you want 🤗)
 
-Step 8: Uploading the final output from local to AWS S3
+Step 7: Uploading the final output from local to AWS S3
 
-Step7: Create Hbase TABLE
+
 
 
