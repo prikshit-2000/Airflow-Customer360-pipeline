@@ -1,4 +1,4 @@
-# Customer360-pipeline
+# Customer360 Pipeline
 
 We will be implementing a pipeline that will be processing the customers and orders file and will provide the output to the customer service team for analysis and this output will be stored on AWS S3 also. 
 
