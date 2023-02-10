@@ -5,17 +5,17 @@ We will be implementing a pipeline that will be processing the customers and ord
 
 ## List of Components Used for the pipeline
 
-VSCode Editor 🧑‍💻
-Docker 🐳
-Amazon S3 🪣
-Hive 🐘
-Spark 🌟
-Airflow 💨
-HDFS 📦
-Gmail SMTP Server 📧
-Slack 🔔
+- VSCode Editor 🧑‍💻
+- Docker 🐳
+- Amazon S3 🪣
+- Hive 🐘
+- Spark 🌟
+- Airflow 💨
+- HDFS 📦
+- Gmail SMTP Server 📧
+- Slack 🔔
 
-<i>*Note:- We will be using a Docker Contianer for Hive, Spark, HDFS and Airflow. So you just need docker for this 😉</i> 
+<i>Note*:- We will be using a Docker Contianer for Hive, Spark, HDFS and Airflow. So you just need docker for this 😉</i> 
 
 
 ## Pipeline implementation involves the below steps
