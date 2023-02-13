@@ -67,3 +67,16 @@ Step 8: Creating the table in AWS Athena and querying it in AWS Athena
 
 ### Customer 360 DAG
 <img src = "/images/airflow_dag.png"></img>
+
+### Gmail alerts
+Pipeline Success!
+<img src = "/images/pipeline_success_email.png"></img>
+Pipeline Failed!
+<img src = "/images/pipeline_failed_email.png"></img>
+
+### Slack alerts
+Pipeline Success!
+<img src = "/images/slack_success.png"></img>
+Pipeline Failed!
+<img src = "/images/slack_fail.png"></img>
+
