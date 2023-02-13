@@ -37,6 +37,8 @@ Step 6: Storing the final output to final_table and saving this output in local 
 
 Step 7: Uploading the final output from local to AWS S3
 
+Step 8: Creating the table in AWS Athena and querying it in AWS Athena
+
 
 
 
