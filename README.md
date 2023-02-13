@@ -53,5 +53,14 @@ Step 8: Creating the table in AWS Athena and querying it in AWS Athena
 
 <img src = "/images/slack_conn.png"></img>
 
+### Requirements
+- AWS free account
+- Docker should be installed
 
+### Execution Steps
 
+- Clone the repo and your current working directory should be customer360_pipeline
+- Run start.sh file inside customer360_pipeline folder using command bash start.sh (for windows) / ./start.sh  to start the required docker containers needed for the project 
+- if your containers are healthy and running you will be able to navigate to airlfow UI (localhost:8080)
+- Make the above connections there and the variables will be made by our customer360.py (inside dag folder) automatically.
+- Just go to the UI now and start the dag.
