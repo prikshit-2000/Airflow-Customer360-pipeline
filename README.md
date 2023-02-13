@@ -39,6 +39,19 @@ Step 7: Uploading the final output from local to AWS S3
 
 Step 8: Creating the table in AWS Athena and querying it in AWS Athena
 
+### Connections
+
+#### order_s3 connection to fetch data from aws s3 bucket
+
+<img src = "/images/order_s3.png"></img>
+
+#### spark connection in airflow
+
+<img src = "/images/spark_conn.png"></img>
+
+#### slack connection in airflow
+
+<img src = "/images/slack_conn.png"></img>
 
 
 
