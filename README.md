@@ -77,9 +77,9 @@ Pipeline Failed!<br>
 <br>
 ### Slack alerts
 Pipeline Success!<br>
-<img src = "/images/slack_success.png" height="200" width="500"></img>
+<img src = "/images/slack_success.png" height="100" width="1000"></img>
 <br>
 Pipeline Failed!<br>
-<img src = "/images/slack_fail.png" height="200" width="500"></img>
+<img src = "/images/slack_fail.png" height="100" width="1000"></img>
 <br>
 
