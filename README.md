@@ -43,7 +43,7 @@ Step 8: Creating the table in AWS Athena and querying it in AWS Athena
 
 #### order_s3 connection to fetch data from aws s3 bucket
 
-<img src = "/images/order_s3.png"></img>
+<img src = "/images/aws_conn.png"></img>
 
 #### spark connection in airflow
 
