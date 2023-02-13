@@ -64,3 +64,6 @@ Step 8: Creating the table in AWS Athena and querying it in AWS Athena
 - if your containers are healthy and running you will be able to navigate to airlfow UI (localhost:8080)
 - Make the above connections there and the variables will be made by our customer360.py (inside dag folder) automatically.
 - Just go to the UI now and start the dag.
+
+### Customer 360 DAG
+<img src = "/images/airflow_dag.png"></img>
