@@ -13,7 +13,7 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
 from airflow.operators.email import EmailOperator
 
 from files.variables import airflow_variables
-from scripts.export_to_postgres import run_queries
+from scripts.export_to_athena import run_queries
 
 for key, value in airflow_variables.items():
     Variable.set(key, value=value)
@@ -166,7 +166,7 @@ export_to_S3 = PythonOperator(
     python_callable=local_to_S3,
 )
 
-export_to_postgres = PythonOperator(
+export_to_athena = PythonOperator(
     task_id="export_to_athena",
     python_callable=run_queries,
 )
@@ -181,7 +181,7 @@ send_email_success = EmailOperator(
     to=send_to_email,
     subject="customer360 pipeline success!",
     html_content=f"""
-    <h3>Congratulations! Data loaded in S3 bucket successfully.</h3>
+    <h3>Congratulations! Data loaded in Athena Final Table successfully.</h3>
     <img src = {email_success}></img>
     """,
     trigger_rule="all_success",
@@ -193,7 +193,7 @@ send_email_failed = EmailOperator(
     to=send_to_email,
     subject="customer360 pipeline failed!",
     html_content=f"""
-    <h3>Sorry! Data loading failed in S3 bucket.</h3>
+    <h3>Sorry! Data loading failed in Athena Final Table.</h3>
      <img src = {email_fail}></img>
     """,
     trigger_rule="all_failed",
@@ -204,7 +204,7 @@ send_email_failed = EmailOperator(
 slack_notify_success = SlackWebhookOperator(
     task_id="slack_notification_success",
     http_conn_id="slack_conn",
-    message="Congratulations! Data loaded in S3 bucket successfully.",
+    message="Congratulations! Data loaded in Athena Final Table successfully.",
     channel="#notifications",
     dag=dag,
 )
@@ -212,7 +212,7 @@ slack_notify_success = SlackWebhookOperator(
 slack_notify_fail = SlackWebhookOperator(
     task_id="slack_notification_fail",
     http_conn_id="slack_conn",
-    message="Sorry! Data loading failed in S3 bucket.",
+    message="Sorry! Data loading failed in Athena Final Table.",
     channel="#notifications",
     dag=dag,
 )
@@ -228,6 +228,6 @@ upload_customer_info >> create_customer_table
     >> final_table
     >> final_hive_table
 )
-final_hive_table >> export_to_S3 >> export_to_postgres >>[send_email_success, send_email_failed]
+final_hive_table >> export_to_S3 >> export_to_athena >>[send_email_success, send_email_failed]
 send_email_success >> slack_notify_success
 send_email_failed >> slack_notify_fail
