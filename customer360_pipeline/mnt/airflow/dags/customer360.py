@@ -13,7 +13,7 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
 from airflow.operators.email import EmailOperator
 
 from files.variables import airflow_variables
-
+from scripts.export_to_postgres import run_queries
 
 for key, value in airflow_variables.items():
     Variable.set(key, value=value)
@@ -50,24 +50,25 @@ def get_customer_url():
 
 def get_order_filter_cmd():
     command_zero = "export SPARK_MAJOR_VERSION=2"
-    command_one = "hdfs dfs -rm -R -f airflowoutput"
+    command_one = "hdfs dfs -rm -R -f airflowoutput_orders"
     return f"{command_zero} && {command_one}"
 
 
 def create_order_hive_table_cmd():
     command_one = 'hive -e "CREATE DATABASE IF NOT EXISTS airflow_final"'
-    command_two = "hive -e \"create external table if not exists airflow_final.orders(order_id int,order_date string,customer_id int,status string) row format delimited fields terminated by ',' stored as textfile location '/airflowoutput'\""
+    command_two = "hive -e \"create external table if not exists airflow_final.orders(order_id int,order_date string,order_customer_id int,status string) row format delimited fields terminated by ',' stored as textfile location '/airflowoutput_orders'\""
     return f"{command_one} && {command_two}"
 
 
 def create_customer_hive_table_cmd():
     command_one = 'hive -e "CREATE DATABASE IF NOT EXISTS airflow_final"'
-    command_two = "hive -e \"create external table if not exists airflow_final.customers(customer_id int,customer_fname string,customer_lname string,customer_email string,customer_password string,customer_street string,customer_city string,customer_state string,customer_zipcode int) row format delimited fields terminated by ',' stored as textfile location '/airflowoutput'\""
-    return f"{command_one} && {command_two}"
+    command_two = "hive -e \"create  table if not exists airflow_final.customers(customer_id int,customer_fname string,customer_lname string,customer_email string,customer_password string,customer_street string,customer_city string,customer_state string,customer_zipcode int) row format delimited fields terminated by ','\" "
+    command_three = "hive -e \"LOAD DATA  INPATH '/airflow_input/customers.csv' INTO TABLE airflow_final.customers\"";
+    return f"{command_one} && {command_two} && {command_three}"
 
 
-def load_join_cmd():
-    command_one = "hive -e \"create external table if not exists airflow_final.final_table(customer_id int,customer_fname string,customer_lname string,order_id int,order_date string) row format delimited fields terminated by ',' stored as textfile location '/airflowoutput'\""
+def create_final_table_cmd():
+    command_one = "hive -e \"create  table if not exists airflow_final.final_table(customer_id int,customer_fname string,customer_lname string,order_id int,order_date string) row format delimited fields terminated by ','\""
 
     return f"{command_one}"
 
@@ -76,8 +77,9 @@ def hive_to_csv():
     command_one = (
         "cd /tmp && rm -rf customer360_output && mkdir -p customer360_output && cd .."
     )
-    command_two = 'hive -e "select * from airflow_final.final_table" > /tmp/customer360_output/customer360_final.csv'
-    return f"{command_one} && {command_two}"
+    
+    command_three = """hive -e "select * from airflow_final.final_table" |  sed 's/[\t]/,/g'  > /tmp/customer360_output/customer360_final.csv"""
+    return f"{command_one} && {command_three}"
 
 
 dag = DAG(dag_id="customer_360_pipeline", start_date=days_ago(1))
@@ -98,7 +100,7 @@ sensor2 = HttpSensor(
 )
 
 
-download_order_cmd = f"pwd && cd .. && pwd && cd /tmp && rm -rf airflow_pipeline && mkdir -p airflow_pipeline && cd airflow_pipeline && wget {get_order_url()} && wget {get_customer_url()}"
+download_order_cmd = f"cd /tmp && rm -rf airflow_pipeline && mkdir -p airflow_pipeline && cd airflow_pipeline && wget {get_order_url()} && wget {get_customer_url()}"
 
 
 download_to_edgenode = BashOperator(
@@ -142,8 +144,8 @@ create_customer_table = BashOperator(
 )
 
 
-load_final_table = BashOperator(
-    task_id="load_final_table", bash_command=load_join_cmd(), dag=dag
+create_final_table = BashOperator(
+    task_id="create_final_table", bash_command=create_final_table_cmd(), dag=dag
 )
 
 
@@ -162,6 +164,11 @@ final_hive_table = BashOperator(
 export_to_S3 = PythonOperator(
     task_id="export_to_s3",
     python_callable=local_to_S3,
+)
+
+export_to_postgres = PythonOperator(
+    task_id="export_to_athena",
+    python_callable=run_queries,
 )
 
 send_to_email = Variable.get("Send_to_email")
@@ -211,16 +218,16 @@ slack_notify_fail = SlackWebhookOperator(
 )
 
 
-[sensor, sensor2] >> download_to_edgenode >> [upload_order_info, upload_customer_info]
+[sensor, sensor2] >> download_to_edgenode >> [upload_order_info,upload_customer_info]
 
 upload_order_info >> process_order_info >> spark_job >> create_order_table
 upload_customer_info >> create_customer_table
 (
     [create_order_table, create_customer_table]
-    >> load_final_table
+    >> create_final_table
     >> final_table
     >> final_hive_table
 )
-final_hive_table >> export_to_S3 >> [send_email_success, send_email_failed]
+final_hive_table >> export_to_S3 >> export_to_postgres >>[send_email_success, send_email_failed]
 send_email_success >> slack_notify_success
 send_email_failed >> slack_notify_fail
