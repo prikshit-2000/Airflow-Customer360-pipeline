@@ -72,14 +72,22 @@ Step 8: Creating the table in AWS Athena and querying it in AWS Athena
 Pipeline Success!<br>
 <img src = "/images/pipeline_success_email.png" height="200" width="200"></img>
 <br>
+<br>
+<br>
 Pipeline Failed!<br>
 <img src = "/images/pipeline_failed_email.png" height="200" width="200"></img>
+<br>
+<br>
 <br>
 ### Slack alerts
 Pipeline Success!<br>
 <img src = "/images/slack_success.png" height="100" width="1000"></img>
 <br>
+<br>
+<br>
 Pipeline Failed!<br>
 <img src = "/images/slack_fail.png" height="100" width="1000"></img>
+<br>
+<br>
 <br>
 
